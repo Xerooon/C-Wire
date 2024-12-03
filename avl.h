@@ -11,5 +11,8 @@ typedef struct node{
 
 pAVL createNode(int id, long capacity, long consumption);
 void freeAvl(pAVL station);
+pAVL rotateLeft(pAVL station);
+pAVL rotateRight(pAVL station);
+void printAvl(pAVL station);
 
 #endif
