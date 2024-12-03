@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include "avl.h"
 
-pAVL createNode(int id, long capacity, long consumption){
+pAVL createNode(long id, long capacity, long consumption){
   pAVL new = (pAVL)malloc(sizeof(AVL));
   if(new == NULL){
     printf("Error malloc");
@@ -39,45 +39,67 @@ pAVL rotateRight(pAVL station){
 
   return new;
 }
-/*
-pAVL insert_station(pAVL station, int id, long capacity, long consumption) {
-    if (!station) return create_station(id, capacity, consumption);
 
-    if (id < station->id)
-        station->left = insert_station(station->left, id, capacity, consumption);
-    else if (id > station->id)
-        station->right = insert_station(station->right, id, capacity, consumption);
-    else {
-        station->consumption += consumption; // Mise à jour si station déjà existante
-        return station;
-    }
-
-    // Mettre à jour la hauteur
-    station->height = 1 + (height(station->left) > height(station->right) ? height(station->left) : height(station->right));
-
-    // Vérifier et corriger le déséquilibre
-    int balance = balance_factor(station);
-
-    // Rotation nécessaire
-    if (balance > 1 && id < station->left->id)
-        return rotate_right(station);
-
-    if (balance < -1 && id > station->right->id)
-        return rotate_left(station);
-
-    if (balance > 1 && id > station->left->id) {
-        station->left = rotate_left(station->left);
-        return rotate_right(station);
-    }
-
-    if (balance < -1 && id < station->right->id) {
-        station->right = rotate_right(station->right);
-        return rotate_left(station);
-    }
-
-    return station;
+pAVL doubleRotateLeft(pAVL station){
+  station->right = rotateRight(station->right);
+  return rotateLeft(station);
 }
-*/
+
+pAVL doubleRotateRight(pAVL station){
+  station->left = rotateLeft(station->left);
+  return rotateRight(station);
+}
+
+pAVL balanceAvl(pAVL station){
+  if(station == NULL){
+    printf("station vide");
+    return NULL;
+  }
+  if(station->weight == 2){
+    if(station->right->weight >= 0){
+      return rotateLeft(station);
+    }
+    else{
+      return doublerotationGauche(station);
+    }
+  }
+  else if (station->weight == -2){
+    if(station->left->weight <= 0){
+      return rotateRight(station);
+    }
+    else{
+      return doublerotationDroite(station);
+    }
+  }
+
+  return station;
+}
+
+pAVL insertAvl(pAVL station, long id, long capacity, long consumption){
+  if (station == NULL) {
+    return createNode(id, capacity, consumption);
+  }
+  
+  if (id < station->id) {
+    station->left = insertAvl(station->left, id, capacity, consumption);
+    station->weight -= 1;
+  } else if (id > station->id) {
+    station->right = insertAvl(station->right, id, capacity, consumption);
+    station->weight += 1;
+  } else {
+    printf("ID %d alredy exist\n", id);
+    return station;
+  }
+
+  return balanceAvl(station);
+}
+
+void printAvl(pAVL station){
+  if(!station) return;
+  printAvl(station->left);
+  printf("ID : %d| Capacity : %ld| Consumption : %ld", station->id, station->capacity, station->consumption);
+  printAvl(station->right);
+}
 
 void freeAvl(pAVL station){
   if(!station) return;
@@ -86,11 +108,4 @@ void freeAvl(pAVL station){
   freeAvl(station->right);
 
   free(station);
-}
-
-void printAvl(pAVL station){
-  if(!station) return;
-  printAvl(station->left);
-  printf("ID : %d| Capacity : %ld| Consumption : %ld", station->id, station->capacity, station->consumption);
-  printAvl(station->right);
 }

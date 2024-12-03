@@ -1,4 +1,4 @@
-FILE="test.dat"
+FILE="c-wire_v00.dat"
 
 centrales=$(awk -F';' '$1 != "-" && $2 == "-" && $3 == "-" && $4 == "-" && $5 == "-" && $6 == "-" && $7 != "-" {count++} END {print count}' "$FILE")
 stations_hvb=$(awk -F';' '$1 != "-" && $2 != "-" && $3 == "-" && $4 == "-" && $5 == "-" && $6 == "-" && $7 != "-" {count++} END {print count}' "$FILE")
