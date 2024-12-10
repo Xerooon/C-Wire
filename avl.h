@@ -1,6 +1,7 @@
 #ifndef AVL_H
 #define AVL_H
 
+// Structure for AVL Tree node
 typedef struct node{
   long id;
   long capacity;
@@ -9,6 +10,7 @@ typedef struct node{
   struct node *left, *right;
 }AVL, *pAVL;
 
+// Fonctions 
 pAVL createNode(long id, long capacity, long consumption);
 pAVL rotateLeft(pAVL station);
 pAVL rotateRight(pAVL station);
