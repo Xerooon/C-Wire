@@ -1,13 +1,14 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <errno.h>
 #include "avl.h"
 
 // Function to create a new AVL tree node
 pAVL createNode(long id, long capacity, long consumption){
   pAVL new = (pAVL)malloc(sizeof(AVL));
   // Check if memory allocation succeeded
-  if(new == NULL){
-    printf("Error malloc");
+  if(!new){
+    fprintf(stderr, "Error allocating memory %s\n", sterror(errno));
     exit(EXIT_FAILURE);
   }
 

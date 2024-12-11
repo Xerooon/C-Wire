@@ -4,8 +4,8 @@
 // Structure for AVL Tree node
 typedef struct node{
   long id;
-  long capacity;
-  long consumption;
+  long capacity; //(in kWh)
+  long consumption; //(in kWh)
   int weight;
   struct node *left, *right;
 }AVL, *pAVL;
