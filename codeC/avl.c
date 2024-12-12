@@ -88,23 +88,30 @@ pAVL balanceAvl(pAVL station){
 }
 
 // Function to insert a new node into the AVL tree
-pAVL insertAvl(pAVL station, long id, long capacity, long consumption){
-  if (station == NULL) {
+pAVL insertAVL(pAVL station, long id, long capacity, long consumption, int *h){
+  if(station == NULL){
+    *h = 1;
     return createNode(id, capacity, consumption);
   }
-  
-  if (id < station->id) {
-    station->left = insertAvl(station->left, id, capacity, consumption);
-    station->weight -= 1;
-  } else if (id > station->id) {
-    station->right = insertAvl(station->right, id, capacity, consumption);
-    station->weight += 1;
-  } else {
-    printf("ID %d alredy exists\n", id);
-    return station;
+
+  if(id < station->id){
+    station->left = insertAVL(station->left, id, capacity, consumption, h);
+    if(*h) station->weight--;
+  }
+  else if(id > station->id){
+    station->right = insertAVL(station->right, id, capacity, consumption, h);
+    if(*h) station->weight++;
   }
 
-  return balanceAvl(station);
+  if(station->weight < -1 || station->weight > 1){
+    station = balanceAvl(station);
+    *h = 0;
+  }
+  else if(station->weight == 0){
+    *h = 0;
+  }
+  
+  return station;
 }
 
 // Function to print the AVL tree in-order
