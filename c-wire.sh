@@ -60,38 +60,41 @@ mkdir -p "$TMP_DIR" "$OUTPUT_DIR"
 rm -rf "$TMP_DIR"/*
 
 # Filter input CSV
-FILTERED_CSV="$TMP_DIR/filtered.csv"
-echo "Filtering data for station: $TYPE_STATION, consumer: $TYPE_CONSUMER, central: ${CENTRAL_ID:-all}"...
-awk -F';' -v station="$TYPE_STATION" -v consumer="$TYPE_CONSUMER" -v central="$CENTRAL_ID" \
+STATION_FILE="$TMP_DIR/stations.csv"
+CONSUMER_FILE="$TMP_DIR/consumers_${TYPE_CONSUMER}.csv"
+echo "Filtering data for station: $TYPE_STATION, consumer: $TYPE_CONSUMER, central: ${CENTRAL_ID:-all}..."
+awk -F';' -v station="$TYPE_STATION" -v consumer="$TYPE_CONSUMER" -v central="$CENTRAL_ID" -v station_file="$STATION_FILE" -v consumer_file="$CONSUMER_FILE" \
 'BEGIN { OFS=";" }
-NR > 1 { # Ignore the first line (header) for repeated inclusion
-  # Include the station itself
-  if ((station == "hvb" && $2 != "-" && $3 == "-" && $4 == "-") ||
-    (station == "hva" && $3 != "-" && $4 == "-") ||
-    (station == "lv" && $4 != "-")) {
+NR > 1 {
+  # Include only the station itself (no consumer data)
+  if ((station == "hvb" && $2 != "-" && $3 == "-" && $4 == "-" && $5 == "-" && $6 == "-") ||
+      (station == "hva" && $3 != "-" && $4 == "-" && $5 == "-" && $6 == "-") ||
+      (station == "lv" && $4 != "-" && $5 == "-" && $6 == "-")) {
     if (central == "" || $1 == central) {
-      print $0;
+      print $0 > station_file
     }
   }
-
-  # Include consumers directly connected to the station
+  # Include only consumers directly connected to the station
   if ((station == "hvb" && $2 != "-" && $3 == "-" && $4 == "-") ||
-    (station == "hva" && $3 != "-" && $4 == "-") ||
-    (station == "lv" && $4 != "-")) {
-
+      (station == "hva" && $3 != "-" && $4 == "-") ||
+      (station == "lv" && $4 != "-")) {
     if (central == "" || $1 == central) {
       if ((consumer == "comp" && $5 != "-" && $6 == "-") ||
-        (consumer == "indiv" && $5 == "-" && $6 != "-") ||
-        (consumer == "all")) {
-        print $0;
+          (consumer == "indiv" && $5 == "-" && $6 != "-") ||
+          (consumer == "all" && ($5 != "-" || $6 != "-"))) {
+        print $0 > consumer_file
       }
     }
   }
-}' "$INPUT_CSV" > "$FILTERED_CSV"
+}' "$INPUT_CSV"
 
+# Check if files are not empty
+if [[ ! -s "$STATION_FILE" ]]; then
+  error_exit "No data found for stations."
+fi
 
-if [[ ! -s "$FILTERED_CSV" ]]; then
-  error_exit "No data found after filtering."
+if [[ ! -s "$CONSUMER_FILE" ]]; then
+  error_exit "No data found for consumers."
 fi
 
 # Compile C program if needed
@@ -107,7 +110,7 @@ fi
 OUTPUT_FILE="$OUTPUT_DIR/${TYPE_STATION}_${TYPE_CONSUMER}${CENTRAL_ID:+_}${CENTRAL_ID}.csv"
 HEADER="Station $(echo "$TYPE_STATION" | tr '[:lower:]' '[:upper:]'):Capacité:Consommation"
 echo "Running C program..."
-"$C_EXECUTABLE" "$FILTERED_CSV" "$OUTPUT_FILE" "$HEADER"
+"$C_EXECUTABLE" "$STATION_FILE" "$CONSUMER_FILE" "$OUTPUT_FILE" "$HEADER"
 
 if [[ $? -ne 0 ]]; then
   error_exit "C program execution failed."
