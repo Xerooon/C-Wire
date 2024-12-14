@@ -88,7 +88,7 @@ pAVL balanceAvl(pAVL station){
 }
 
 // Function to insert a new node into the AVL tree
-pAVL insertAVL(pAVL station, long id, long capacity, long consumption, int *h){
+pAVL insertAvl(pAVL station, long id, long capacity, long consumption, int *h){
   if(station == NULL){
     *h = 1;
     return createNode(id, capacity, consumption);
@@ -116,31 +116,22 @@ pAVL insertAVL(pAVL station, long id, long capacity, long consumption, int *h){
   else if(station->weight == 0){
     *h = 0;
   }
-  
+
   return station;
 }
 
 // Function to print the AVL tree in-order
 void printAvl(pAVL station){
   if(!station) return;
-  printAvl(station->left);
   printf("ID : %ld| Capacity : %ld| Consumption : %ld\n", station->id, station->capacity, station->consumption);
+  printAvl(station->left);
   printAvl(station->right);
 }
 
 // Function to free the memory used by the AVL tree
 void freeAvl(pAVL station){
   if(!station) return;
-  
   freeAvl(station->left);
   freeAvl(station->right);
-
   free(station);
-}
-
-void calculateConsumption(pAVL tree, FILE* outputFile){
-  if(!tree) return;
-  calculateConsumption(tree->left, outputFile);
-  fprintf(outputFile, "%ld:%ld:%ld\n", tree->id, tree->capacity, tree->consumption);
-  calculateAndPrint(tree->right, outputFile);
 }

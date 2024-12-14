@@ -17,7 +17,7 @@ pAVL rotateRight(pAVL station);
 pAVL doubleRotateLeft(pAVL station);
 pAVL doubleRotateRight(pAVL station);
 pAVL balanceAvl(pAVL station);
-pAVL insertAvl(pAVL station, long id, long capacity, long consumption);
+pAVL insertAvl(pAVL station, long id, long capacity, long consumption, int * h);
 void printAvl(pAVL station);
 void freeAvl(pAVL station);
 
