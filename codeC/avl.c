@@ -88,11 +88,6 @@ pAVL balanceAvl(pAVL station){
   return station;
 }
 
-// Function to sum up the consumption
-long sumConsumption(pAVL station, long consumption){
-  return station->consumption + consumption;
-}
-
 // Function to insert a new node into the AVL tree
 pAVL insertAvl(pAVL station, long id, long capacity, long consumption, int *h){
   if(station == NULL){
@@ -108,9 +103,12 @@ pAVL insertAvl(pAVL station, long id, long capacity, long consumption, int *h){
     station->right = insertAvl(station->right, id, capacity, consumption, h);
     if(*h) station->weight++;
   } 
-  // Same ID case: sum up the consumption
+  // Same ID case: sum up the consumption and add the capacity
   else {
-    station->consumption = sumConsumption(station, consumption);
+    if(station->capacity==0 && capacity!=0){
+      station->capacity += capacity;
+    }
+    station->consumption += consumption;
     *h = 0;
     return station;
   }
