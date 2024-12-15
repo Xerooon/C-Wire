@@ -4,12 +4,18 @@
 #include "avl.h"
 
 // Main fonction
-int main() {
+int main(int argc, char *argv[]) {
+  if (argc < 2) {
+    fprintf(stderr, "Usage: %s <input_csv>\n", argv[0]);
+    return 1;
+  }
+
+  const char *file_path = argv[1];
   pAVL root = NULL;
   int h;
 
   // Open the CSV file
-  FILE *file = fopen("tmp/stations.csv", "r");
+  FILE *file = fopen(file_path, "r");
   if (file == NULL) {
     perror("Erreur d'ouverture du fichier");
     return 1;

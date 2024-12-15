@@ -5,7 +5,7 @@
 # Usage: ./c-wire.sh <input_csv> <type_station> <type_consumer> [<central_id>] [-h]
 
 # Constants and paths
-C_EXECUTABLE="./codeC/main"
+C_EXECUTABLE="./codeC/programme"
 TMP_DIR="tmp"
 OUTPUT_DIR="tests"
 
@@ -105,7 +105,7 @@ fi
 OUTPUT_FILE="$OUTPUT_DIR/${TYPE_STATION}_${TYPE_CONSUMER}${CENTRAL_ID:+_}${CENTRAL_ID}.csv"
 HEADER="Station $(echo "$TYPE_STATION" | tr '[:lower:]' '[:upper:]'):Capacité:Consommation"
 echo "Running C program..."
-"$C_EXECUTABLE" "$CSV_FILE" "$OUTPUT_FILE" "$HEADER"
+"$C_EXECUTABLE" "$CSV_FILE"
 
 if [[ $? -ne 0 ]]; then
   error_exit "C program execution failed."
