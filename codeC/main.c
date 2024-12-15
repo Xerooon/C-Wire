@@ -1,4 +1,6 @@
 #include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
 #include "avl.h"
 
 // Main fonction
@@ -7,7 +9,7 @@ int main() {
   int h;
 
   // Open the CSV file
-  FILE *file = fopen("../tmp/stations.csv", "r");
+  FILE *file = fopen("tmp/stations.csv", "r");
   if (file == NULL) {
     perror("Erreur d'ouverture du fichier");
     return 1;
@@ -42,11 +44,15 @@ int main() {
           break;
         // Capacity field
         case 6:
-          capacity = atol(token);
+          if (strcmp(token, "-") != 0) {
+            capacity = atol(token);
+          }
           break;
         // Consumption field
         case 7:
-          consumption = atol(token);
+          if (strcmp(token, "-") != 0) {
+            consumption = atol(token);
+          }
           break;
         default:
           break;
@@ -57,7 +63,7 @@ int main() {
 
     // Insert into the AVL tree if the station ID is valid (non-zero)
     if (id != 0) {
-      root = insertAVL(root, id, capacity, consumption, &h);
+      root = insertAvl(root, id, capacity, consumption, &h);
     }
   }
 

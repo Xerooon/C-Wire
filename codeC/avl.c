@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <errno.h>
 #include "avl.h"
 
@@ -87,6 +88,11 @@ pAVL balanceAvl(pAVL station){
   return station;
 }
 
+// Function to sum up the consumption
+long sumConsumption(pAVL station, long consumption){
+  return station->consumption + consumption;
+}
+
 // Function to insert a new node into the AVL tree
 pAVL insertAvl(pAVL station, long id, long capacity, long consumption, int *h){
   if(station == NULL){
@@ -95,15 +101,16 @@ pAVL insertAvl(pAVL station, long id, long capacity, long consumption, int *h){
   }
 
   if(id < station->id){
-    station->left = insertAVL(station->left, id, capacity, consumption, h);
+    station->left = insertAvl(station->left, id, capacity, consumption, h);
     if(*h) station->weight--;
   }
   else if(id > station->id){
-    station->right = insertAVL(station->right, id, capacity, consumption, h);
+    station->right = insertAvl(station->right, id, capacity, consumption, h);
     if(*h) station->weight++;
   } 
-  // Duplicate ID case: ignore the new node
+  // Same ID case: sum up the consumption
   else {
+    station->consumption = sumConsumption(station, consumption);
     *h = 0;
     return station;
   }
