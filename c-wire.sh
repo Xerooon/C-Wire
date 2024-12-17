@@ -60,7 +60,8 @@ mkdir -p "$TMP_DIR" "$OUTPUT_DIR"
 rm -rf "$TMP_DIR"/*
 
 # Filter input CSV
-CSV_FILE="$TMP_DIR/${TYPE_STATION}_${TYPE_CONSUMER}${CENTRAL_ID:+_}${CENTRAL_ID}.csv"
+#CSV_FILE="$TMP_DIR/${TYPE_STATION}_${TYPE_CONSUMER}${CENTRAL_ID:+_}${CENTRAL_ID}.csv"
+CSV_FILE="$TMP_DIR/save.csv"
 echo "Filtering and combining data for station: $TYPE_STATION, consumer: $TYPE_CONSUMER, central: ${CENTRAL_ID:-all}..."
 awk -F';' -v station="$TYPE_STATION" -v consumer="$TYPE_CONSUMER" -v central="$CENTRAL_ID" -v csv_file="$CSV_FILE" \
 'BEGIN { OFS=";" }
@@ -103,9 +104,10 @@ fi
 
 # Run C program
 OUTPUT_FILE="$OUTPUT_DIR/${TYPE_STATION}_${TYPE_CONSUMER}${CENTRAL_ID:+_}${CENTRAL_ID}.csv"
+echo "Station HV-A:Capacité:Consommation (entreprises)" > $OUTPUT_FILE
 HEADER="Station $(echo "$TYPE_STATION" | tr '[:lower:]' '[:upper:]'):Capacité:Consommation"
 echo "Running C program..."
-"$C_EXECUTABLE" "$CSV_FILE"
+"$C_EXECUTABLE" "$CSV_FILE" "$OUTPUT_FILE"
 
 if [[ $? -ne 0 ]]; then
   error_exit "C program execution failed."

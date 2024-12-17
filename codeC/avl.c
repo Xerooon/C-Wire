@@ -128,8 +128,8 @@ pAVL insertAvl(pAVL station, long id, long capacity, long consumption, int *h){
 // Function to print the AVL tree in-order
 void printAvl(pAVL station){
   if(!station) return;
-  printf("ID : %ld| Capacity : %ld| Consumption : %ld\n", station->id, station->capacity, station->consumption);
   printAvl(station->left);
+  printf("ID : %ld| Capacity : %ld| Consumption : %ld\n", station->id, station->capacity, station->consumption);
   printAvl(station->right);
 }
 

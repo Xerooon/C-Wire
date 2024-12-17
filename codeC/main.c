@@ -5,17 +5,16 @@
 
 // Main fonction
 int main(int argc, char *argv[]) {
-  if (argc < 2) {
+  if (argc < 3) {
     fprintf(stderr, "Usage: %s <input_csv>\n", argv[0]);
     return 1;
   }
 
-  const char *file_path = argv[1];
   pAVL root = NULL;
   int h;
 
-  // Open the CSV file
-  FILE *file = fopen(file_path, "r");
+  // Open CSV files
+  FILE* file = fopen(argv[1], "r");
   if (file == NULL) {
     perror("Erreur d'ouverture du fichier");
     return 1;
@@ -76,6 +75,17 @@ int main(int argc, char *argv[]) {
   fclose(file);
 
   printAvl(root);
+
+  // Write in the delivery file
+  FILE* delivery = fopen(argv[2], "r");
+  if (delivery == NULL) {
+    perror("Erreur d'ouverture du fichier");
+    return 1;
+  }
+  fprintf(delivery, "Hello Word");
+
+  fclose(delivery);
+
   freeAvl(root);
   return 0;
 }
