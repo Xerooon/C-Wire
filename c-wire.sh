@@ -10,7 +10,7 @@ TMP_DIR="tmp"
 OUTPUT_DIR="tests"
 
 #Timer
-start_time=$(date +%s)  # Timestamp at the beginning 
+START_TIME=$(date +%s)  # Timestamp at the beginning 
 
 # Helper functions
 function print_help {
@@ -25,7 +25,7 @@ function print_help {
 
 function error_exit {
   echo "Error: $1" >&2
-  echo "Time elapsed for programme execution: 0.0 seconds"
+  echo "Time elapsed for programme execution : 0.0 seconds"
   exit 1
 }
 
@@ -66,7 +66,7 @@ rm -rf "$TMP_DIR"/*
 # Filter input CSV
 #CSV_FILE="$TMP_DIR/${TYPE_STATION}_${TYPE_CONSUMER}${CENTRAL_ID:+_}${CENTRAL_ID}.csv"
 CSV_FILE="$TMP_DIR/save.csv"
-echo "Filtering and combining data for station: $TYPE_STATION, consumer: $TYPE_CONSUMER, central: ${CENTRAL_ID:-all}..."
+echo "Filtering data for station: $TYPE_STATION, consumer: $TYPE_CONSUMER, central: ${CENTRAL_ID:-all}..."
 awk -F';' -v station="$TYPE_STATION" -v consumer="$TYPE_CONSUMER" -v central="$CENTRAL_ID" -v csv_file="$CSV_FILE" \
 'BEGIN { OFS=";" }
 NR > 1 {
@@ -106,10 +106,19 @@ if [[ ! -x "$C_EXECUTABLE" ]]; then
   fi
 fi
 
+# Prepare labels for the output
+STATION_LABEL=$(echo "$TYPE_STATION" | tr '[:lower:]' '[:upper:]') # Convert to uppercase
+case "$TYPE_CONSUMER" in
+  comp) CONSUMER_LABEL="entreprises" ;;
+  indiv) CONSUMER_LABEL="particuliers" ;;
+  all) CONSUMER_LABEL="tout" ;;
+  *) error_exit "Unknown consumer type: $TYPE_CONSUMER" ;;
+esac
+
 # Run C program
-OUTPUT_FILE="$OUTPUT_DIR/${TYPE_STATION}_${TYPE_CONSUMER}${CENTRAL_ID:+_}${CENTRAL_ID}.txt"
-echo "Station ${TYPE_STATION}:Capacité:Consommation ${TYPE_CONSUMER}" > $OUTPUT_FILE
-HEADER="Station $(echo "$TYPE_STATION" | tr '[:lower:]' '[:upper:]'):Capacité:Consommation"
+OUTPUT_FILE="$OUTPUT_DIR/${TYPE_STATION}_${TYPE_CONSUMER}${CENTRAL_ID:+_}${CENTRAL_ID}.cvs"
+HEADER="Station $STATION_LABEL:Capacité:Consommation ($CONSUMER_LABEL)"
+echo "$HEADER" > "$OUTPUT_FILE"
 echo "Running C program..."
 "$C_EXECUTABLE" "$CSV_FILE" "$OUTPUT_FILE"
 
@@ -117,9 +126,7 @@ if [[ $? -ne 0 ]]; then
   error_exit "C program execution failed."
 fi
 
+END_TIME=$(date +%s) # Timestamp at the end
+ELAPSED=$((END_TIME - START_TIME))
 echo "Results saved to $OUTPUT_FILE."
-echo "Done."
-end_time=$(date +%s)    # Timestamp at the end
-
-elapsed=$((end_time - start_time))
-echo "Time elapsed for programme execution: ${elapsed} seconds"
+echo "Done. Time elapsed : ${ELAPSED} seconds"
