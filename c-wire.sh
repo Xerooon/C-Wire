@@ -107,8 +107,8 @@ if [[ ! -x "$C_EXECUTABLE" ]]; then
 fi
 
 # Run C program
-OUTPUT_FILE="$OUTPUT_DIR/${TYPE_STATION}_${TYPE_CONSUMER}${CENTRAL_ID:+_}${CENTRAL_ID}.csv"
-echo "Station HV-A:Capacité:Consommation (entreprises)" > $OUTPUT_FILE
+OUTPUT_FILE="$OUTPUT_DIR/${TYPE_STATION}_${TYPE_CONSUMER}${CENTRAL_ID:+_}${CENTRAL_ID}.txt"
+echo "Station ${TYPE_STATION}:Capacité:Consommation ${TYPE_CONSUMER}" > $OUTPUT_FILE
 HEADER="Station $(echo "$TYPE_STATION" | tr '[:lower:]' '[:upper:]'):Capacité:Consommation"
 echo "Running C program..."
 "$C_EXECUTABLE" "$CSV_FILE" "$OUTPUT_FILE"
