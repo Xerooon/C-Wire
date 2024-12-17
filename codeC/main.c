@@ -77,12 +77,12 @@ int main(int argc, char *argv[]) {
   printAvl(root);
 
   // Write in the delivery file
-  FILE* delivery = fopen(argv[2], "r");
+  FILE* delivery = fopen(argv[2], "a");
   if (delivery == NULL) {
     perror("Erreur d'ouverture du fichier");
     return 1;
   }
-  fprintf(delivery, "Hello Word");
+  fprintf(delivery, "test");
 
   fclose(delivery);
 
