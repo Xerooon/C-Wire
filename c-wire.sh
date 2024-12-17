@@ -9,6 +9,9 @@ C_EXECUTABLE="./codeC/programme"
 TMP_DIR="tmp"
 OUTPUT_DIR="tests"
 
+#Timer
+start_time=$(date +%s)  # Timestamp at the beginning 
+
 # Helper functions
 function print_help {
   echo "Usage: $0 <input_csv> <type_station> <type_consumer> [<central_id>] [-h]"
@@ -22,6 +25,7 @@ function print_help {
 
 function error_exit {
   echo "Error: $1" >&2
+  echo "Time elapsed for programme execution: 0.0 seconds"
   exit 1
 }
 
@@ -115,3 +119,7 @@ fi
 
 echo "Results saved to $OUTPUT_FILE."
 echo "Done."
+end_time=$(date +%s)    # Timestamp at the end
+
+elapsed=$((end_time - start_time))
+echo "Time elapsed for programme execution: ${elapsed} seconds"
