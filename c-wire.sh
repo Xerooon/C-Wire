@@ -162,9 +162,10 @@ if [[ $? -ne 0 ]]; then
 fi
 
 # Sort output by capacity in ascending order
-tail -n +2 "$OUTPUT_FILE" | sort -t ':' -k2n > "$TMP_DIR/sorted_output"
+SORTED_FILE="$TMP_DIR/sorted_output"
+tail -n +2 "$OUTPUT_FILE" | sort -t ':' -k2n > "$SORTED_FILE"
 echo "$HEADER" > "$OUTPUT_FILE"
-cat "$TMP_DIR/sorted_output" >> "$OUTPUT_FILE"
+cat "$SORTED_FILE" >> "$OUTPUT_FILE"
 
 # Create lv_all_minmax.csv
 if [[ "$TYPE_CONSUMER" == "all" && "$TYPE_STATION" == "lv" ]]; then
