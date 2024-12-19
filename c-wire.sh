@@ -12,6 +12,16 @@ OUTPUT_DIR="./tests"
 # Timestamp at the beginning 
 START_TIME=$(date +%s)  
 
+# Banner function
+function printBanner {
+  echo "    ___     __    __ _          "
+  echo "   / __\   / / /\ \ (_)_ __ ___ "
+  echo "  / /  ____\ \/  \/ | | '__/ _ \ "
+  echo " / /__|_____\  /\  /| | | |  __/ "
+  echo " \____/      \/  \/ |_|_|  \___| "
+  echo ""
+}
+
 # Helper functions
 function print_help {
   echo "Usage: $0 <input_csv> <type_station> <type_consumer> [<central_id>] [-h]"
@@ -23,6 +33,7 @@ function print_help {
   exit 1
 }
 
+# Error fonction
 function error_exit {
   echo "Error: $1" >&2
   echo "Time elapsed for programme execution : 0.0 seconds"
@@ -177,7 +188,47 @@ if [[ "$TYPE_CONSUMER" == "all" && "$TYPE_STATION" == "lv" ]]; then
   echo "Min and Max 'capacity-load' extreme nodes" > "$MINMAX_FILE"
   echo "$HEADER" >> "$MINMAX_FILE"
   cat "$SORTED_FILE" >> "$MINMAX_FILE"
+   
+# Temporary file containing data
+DATA_FILE="$OUTPUT_FILE"
+OUTPUT_DIR_GRAPHS="Graphs"
+GRAPH_FILE="$OUTPUT_DIR_GRAPHS/graph.png"
+
+if [ ! -f "$DATA_FILE" ]; then
+    echo "Error : the file '$DATA_FILE' cannot be found."
+    echo "You need to create a new file '$DATA_FILE' with the columns : Station,Capacité,Consommation."
+    exit 1
 fi
+
+if [ ! -d "$OUTPUT_DIR_GRAPHS" ]; then
+    mkdir -p "$OUTPUT_DIR_GRAPHS"
+fi
+
+gnuplot <<- GNUPLOT_SCRIPT
+    set terminal png size 800,600
+    set output "$GRAPH_FILE"
+    set datafile separator ":"  
+    set title "Station capacity and consumption"
+    set xlabel "Station"
+    set ylabel "Value (in units)"
+    set grid
+    set style data histograms
+    set style fill solid 0.6 border -1  
+    set boxwidth 0.4
+    set xtics rotate by -45
+    set key outside
+
+    plot "$DATA_FILE" using 2:xtic(1) title 'Capacité' with boxes lc rgb "green" lt 1, \
+         "$DATA_FILE" using 3:xtic(1) title 'Consommation' with boxes lc rgb "red" lt 1
+GNUPLOT_SCRIPT
+
+echo "the graphic is generated in : $GRAPH_FILE"
+fi
+
+# Clear temp directory
+rm tmp/*
+cd ./codeC 
+make clean
 
 # Timestamp at the end
 END_TIME=$(date +%s)
