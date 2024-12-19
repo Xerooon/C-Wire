@@ -26,4 +26,4 @@ $(EXECUTABLE): $(OBJECTS)
 
 # Rule to clean up generated files
 clean:
-	rm -f $(EXECUTABLE)
+	rm -f $(OBJECTS) $(EXECUTABLE)
