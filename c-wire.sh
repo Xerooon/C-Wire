@@ -166,6 +166,18 @@ tail -n +2 "$OUTPUT_FILE" | sort -t ':' -k2n > "$TMP_DIR/sorted_output"
 echo "$HEADER" > "$OUTPUT_FILE"
 cat "$TMP_DIR/sorted_output" >> "$OUTPUT_FILE"
 
+# Create lv_all_minmax.csv
+if [[ "$TYPE_CONSUMER" == "all" && "$TYPE_STATION" == "lv" ]]; then
+  MINMAX_FILE="$OUTPUT_DIR/lv_all_minmax.csv"
+  cat "$OUTPUT_FILE" > "$MINMAX_FILE"
+  sort -t ':' -k3n "$MINMAX_FILE" > "$SORTED_FILE"
+  sort -t ':' -k3n "$SORTED_FILE" | tail -n +2 | { head -n 10 && tail -n 10; } > "$MINMAX_FILE" # Take only the 10 first and 10 last
+  awk -F':' '{diff = $3 - $2; print diff, $0}' "$MINMAX_FILE" | sort -k1,1nr | cut -d' ' -f2- > "$SORTED_FILE" # Sort the difference: Load(-)Capacity
+  echo "Min and Max 'capacity-load' extreme nodes" > "$MINMAX_FILE"
+  echo "$HEADER" >> "$MINMAX_FILE"
+  cat "$SORTED_FILE" >> "$MINMAX_FILE"
+fi
+
 # Timestamp at the end
 END_TIME=$(date +%s)
 ELAPSED=$((END_TIME - START_TIME))
