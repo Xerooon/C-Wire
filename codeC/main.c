@@ -1,7 +1,16 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 #include "avl.h"
+
+
+void printToFile(pAVL station, FILE *file) {
+  if (!station) return;
+  printToFile(station->left, file);
+  fprintf(file, "%ld:%ld:%ld\n", station->id, station->capacity, station->consumption);
+  printToFile(station->right, file);
+}
 
 // Main fonction
 int main(int argc, char *argv[]) {
@@ -16,7 +25,7 @@ int main(int argc, char *argv[]) {
   // Open CSV files
   FILE* file = fopen(argv[1], "r");
   if (file == NULL) {
-    perror("Erreur d'ouverture du fichier");
+    perror("Error trying open file");
     return 1;
   }
 
@@ -74,16 +83,14 @@ int main(int argc, char *argv[]) {
 
   fclose(file);
 
-  printAvl(root);
-
   // Write in the delivery file
   FILE* delivery = fopen(argv[2], "a");
   if (delivery == NULL) {
-    perror("Erreur d'ouverture du fichier");
-    return 1;
+    perror("Error trying open file");
+  return 1;
   }
-  fprintf(delivery, "test");
 
+  printToFile(root, delivery);
   fclose(delivery);
 
   freeAvl(root);
