@@ -27,9 +27,3 @@ $(EXECUTABLE): $(OBJECTS)
 # Rule to clean up generated files
 clean:
 	rm -f $(EXECUTABLE)
-
-#$(OBJECTS) 
-
-# Rule to completely clean the project (including the executable)
-#mrproper: clean
-#	rm -f $(EXECUTABLE)
