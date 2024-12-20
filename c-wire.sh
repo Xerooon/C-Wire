@@ -40,6 +40,8 @@ function error_exit {
   exit 1
 }
 
+printBanner
+
 # If the argument is -h display the help
 for arg in "$@"; do
   case "$arg" in
@@ -187,22 +189,28 @@ if [[ "$TYPE_CONSUMER" == "all" && "$TYPE_STATION" == "lv" ]]; then
   echo "$HEADER" >> "$MINMAX_FILE"
   cat "$SORTED_FILE" >> "$MINMAX_FILE"
    
-# Temporary file containing data
-DATA_FILE="tmp/sorted_output"
-OUTPUT_DIR_GRAPHS="graphs"
-GRAPH_FILE="$OUTPUT_DIR_GRAPHS/graph.png"
+  # Temporary file containing data for the graph
+  DATA_FILE="tmp/sorted_output"
+  OUTPUT_DIR_GRAPHS="graphs"
+  GRAPH_FILE="$OUTPUT_DIR_GRAPHS/graph.png"
 
-if [ ! -f "$DATA_FILE" ]; then
+  if [ ! -f "$DATA_FILE" ]; then
     echo "Error : the file '$DATA_FILE' cannot be found."
     echo "You need to create a new file '$DATA_FILE' with the columns : Station,Capacité,Consommation."
     exit 1
-fi
+  fi
 
-if [ ! -d "$OUTPUT_DIR_GRAPHS" ]; then
+  if [ ! -d "$OUTPUT_DIR_GRAPHS" ]; then
     mkdir -p "$OUTPUT_DIR_GRAPHS"
-fi
+  fi
 
-gnuplot <<- GNUPLOT_SCRIPT
+  if [[ ! -s "$DATA_FILE" ]]; then
+    echo "Error : DATA_FILE (empty file)."
+    exit 1
+  fi
+
+# Graphic with the stations in the lv
+  gnuplot <<- GNUPLOT_SCRIPT
     set terminal png size 800,600
     set output "$GRAPH_FILE"
     set datafile separator ":"  
@@ -217,10 +225,10 @@ gnuplot <<- GNUPLOT_SCRIPT
     set key outside
 
     plot "$DATA_FILE" using 2:xtic(1) title 'Capacité' with boxes lc rgb "green" lt 1, \
-         "$DATA_FILE" using 3:xtic(1) title 'Consommation' with boxes lc rgb "red" lt 1
+        "$DATA_FILE" using 3:xtic(1) title 'Consommation' with boxes lc rgb "red" lt 1
 GNUPLOT_SCRIPT
 
-echo "the graphic is generated in : $GRAPH_FILE"
+  echo "the graphic is generated in : $GRAPH_FILE"
 fi
 
 # Clear temp directory

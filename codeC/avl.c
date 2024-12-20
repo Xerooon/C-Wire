@@ -3,6 +3,7 @@
 #include <string.h>
 #include <errno.h>
 #include "avl.h"
+#include "fileOper.h"
 
 // Function to create a new AVL tree node
 pAVL createNode(long id, long capacity, long consumption){

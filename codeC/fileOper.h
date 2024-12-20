@@ -1,9 +1,13 @@
 #ifndef FILEOPER_H
 #define FILEOPER_H
+#include "avl.h"
+
 
 #define MAX_LINE_LENGTH 1024
 #define MAX_FIELDS 20
 
-char* read_csv_file_BIS(FILE* file);
+// Fonctions
+pAVL fileToAVL(pAVL root, FILE *file);
+void printToFile(pAVL station, FILE *file);
 
 #endif

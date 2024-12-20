@@ -2,7 +2,7 @@
 EXECUTABLE = programme
 
 # Source files and corresponding object files
-SOURCES = avl.c main.c
+SOURCES = main.c avl.c fileOper.c
 OBJECTS = $(SOURCES:.c=.o)  # Automatically convert .c files to .o files
 
 # Compilation options
