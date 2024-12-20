@@ -181,17 +181,15 @@ cat "$SORTED_FILE" >> "$OUTPUT_FILE"
 # Create lv_all_minmax.csv
 if [[ "$TYPE_CONSUMER" == "all" && "$TYPE_STATION" == "lv" ]]; then
   MINMAX_FILE="$OUTPUT_DIR/lv_all_minmax.csv"
-  cat "$OUTPUT_FILE" > "$MINMAX_FILE"
-  sort -t ':' -k3n "$MINMAX_FILE" > "$SORTED_FILE"
-  sort -t ':' -k3n "$SORTED_FILE" | tail -n +2 | { head -n 10 && tail -n 10; } > "$MINMAX_FILE" # Take only the 10 first and 10 last
-  awk -F':' '{diff = $3 - $2; print diff, $0}' "$MINMAX_FILE" | sort -k1,1nr | cut -d' ' -f2- > "$SORTED_FILE" # Sort the difference: Load(-)Capacity
+  awk -F':' '{diff = $3 - $2; print diff, $0}' "$SORTED_FILE" | sort -k1,1nr | cut -d' ' -f2- > "$MINMAX_FILE" # Sort the difference: Load(-)Capacity
+  { head -n 10 "$MINMAX_FILE" && tail -n 10 "$MINMAX_FILE"; } > "$SORTED_FILE" # Take only the 10 first and 10 last
   echo "Min and Max 'capacity-load' extreme nodes" > "$MINMAX_FILE"
   echo "$HEADER" >> "$MINMAX_FILE"
   cat "$SORTED_FILE" >> "$MINMAX_FILE"
    
 # Temporary file containing data
-DATA_FILE="$OUTPUT_FILE"
-OUTPUT_DIR_GRAPHS="Graphs"
+DATA_FILE="tmp/sorted_output"
+OUTPUT_DIR_GRAPHS="graphs"
 GRAPH_FILE="$OUTPUT_DIR_GRAPHS/graph.png"
 
 if [ ! -f "$DATA_FILE" ]; then
