@@ -40,8 +40,6 @@ function error_exit {
   exit 1
 }
 
-printBanner
-
 # If the argument is -h display the help
 for arg in "$@"; do
   case "$arg" in
@@ -92,6 +90,9 @@ fi
 # Prepare directories
 mkdir -p "$TMP_DIR" "$OUTPUT_DIR"
 rm -rf "$TMP_DIR"/*
+
+printBanner
+echo "Analyzing input file ..."
 
 CSV_FILE="$TMP_DIR/temp_${TYPE_STATION}_${TYPE_CONSUMER}${CENTRAL_ID:+_}${CENTRAL_ID}.csv"
 # Filter input CSV
@@ -232,7 +233,7 @@ GNUPLOT_SCRIPT
 fi
 
 # Clear temp directory
-rm tmp/*
+rm -rf "$TMP_DIR"/*
 cd ./codeC 
 make clean
 
@@ -240,5 +241,8 @@ make clean
 END_TIME=$(date +%s)
 ELAPSED=$((END_TIME - START_TIME))
 
-echo "Results saved to $OUTPUT_FILE."
+echo "
+=============================================
+
+Results saved to $OUTPUT_FILE."
 echo "Done. Time elapsed : ${ELAPSED} seconds"
